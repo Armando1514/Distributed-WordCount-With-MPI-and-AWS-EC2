@@ -62,10 +62,14 @@ ssh-keygen
 ```
 Your key are stored in the folder .ssh, in the file id_rsa and id_rsa.pub .
 ## Install
-**1. Configure install.sh ** \
+
+**1. Configure install.sh  **\
+
 Replace into the file install.sh the section where is write "Change here using tour ..." .
 Pay attention to copy correctly the content of id_rsa and id_rsa.pub (also the space is important).\
-**2. Run the script **  \ 
+
+**2. Run the script **      \
+
 Run the script "install.sh"  on all the ec2 instance, for do that, write:
 ``` bash 
 source install.sh
