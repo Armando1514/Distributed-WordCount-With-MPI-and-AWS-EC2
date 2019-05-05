@@ -1,7 +1,7 @@
 # Tutorial
 This tutorial refers to a system with a Linux OS (in this case Ubuntu)
 # Prerequisites
-**0. AWS Account** (in my case is a student account)\
+**0. AWS Account** (in my case is a student account)
 # Requirements for start to work with AWS:
 **1.  Amazon CLI**\
 the installation is easy, just open the terminal and write:
@@ -56,7 +56,7 @@ What this script installs?
 - 1 Master node, here you need to generate the ssh-key and update the script.
 - N Slaves, here you need to run the script using the keys generated on the master node.
 ## How to generate your SSH keys
-Execute the command 
+Execute the command on the master node :
 ``` bash
 ssh-keygen
 ```
@@ -70,11 +70,33 @@ Pay attention to copy correctly the content of id\_rsa and id\_rsa.pub (also the
 
 **2. Run the script** 
 
-Run the script "install.sh"  on all the ec2 instance, for do that, write:
+Run the script "install.sh"  on all the ec2 instance.\ If you changed the file on your local pc  first you need to send from your local computer to the ec2 instances through scp:
+``` bash
+scp -i access-key.pem  install.sh ubuntu@instancePublicIP:~
+```
+After, login through terminal in the instance where you send the file :
+ ```bash
+     ssh -i access-key.pem ubuntu@instancePublicIP
+     
+```
+Execute the command:
+
 ``` bash 
 source install.sh
 ```
-**3. Create the host file in the master node** \
+**3. Configure your cluster** \
+
+Manually connect on each node to share your SSH id 
+``` bash
+ssh privateIpOfEachInstance
+```
+In the master node login as pcpc
+``` bash
+sudo login pcpc
+```
+**4. Create the host file in the master node** \
+
+
 Create a file named machinefile in the master node, and write inside all the private id of each instance, for example:
 ``` text
 localhost slots=1
@@ -82,14 +104,14 @@ privateIpIstance1 slots=1
 privateIpInstance2 slots=1
 ```
 (slots does it mean the core that each EC2 istance have inside, in our case 1.)\
-**4. Test the environment** \
-Compile the program with: 
+**5. Test the environment** \
+Compile the program  on your master node with: 
 ```
 mpicc -fopenmp 1.helloToAnother.c -o helloToAnother
 ```
 send the file compiled helloToAnother to each slave, with the command:
 ``` bash
-scp helloToAnother MPIForAWSEC2:privateIp:~
+scp helloToAnother pcpc@privateIp:~
 ```
 now we can run our example
 ``` bash
