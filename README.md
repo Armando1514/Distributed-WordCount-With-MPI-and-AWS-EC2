@@ -10,9 +10,7 @@ the installation is easy, just open the terminal and write:
     sudo python get-pip.py
     sudo pip install awscli
   ``` 
-After that, you need to configure your CLI, go in your account, click on "Account Detalis", like
-the screen below:
-![screen of AWS account](screenshot1.jpg)
+After that, you need to configure your CLI, go in your account, click on "Account Detalis" and after
 click on "Show", near AWS CLI and copy all the code starting from [default] and paste in "~/.aws/credentials".
 Well Done! The first step is over.\
 **2.  Create a Security Group**\
@@ -71,10 +69,10 @@ Pay attention to copy correctly the content of id_rsa and id_rsa.pub (also the s
 Run the script "install.sh"  on all the ec2 instance, for do that, write:
 ``` bash 
 source install.sh
-```\
+```
 **3. Create the host file in the master node**\
 Create a file named machinefile in the master node, and write inside all the private id of each instance, for example:
-```
+``` text
 localhost slots=1
 privateIpIstance1 slots=1
 privateIpInstance2 slots=1
