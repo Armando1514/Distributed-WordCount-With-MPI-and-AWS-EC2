@@ -16,7 +16,7 @@ struct node {
    struct node *next;
 };
 
-struct node * getHeader();
+void setHeader(struct node *ref);
 
 struct node* getfilenamelist();
 
@@ -27,7 +27,7 @@ long getTotalFileSizes();
 struct  node* listOfFileNames();
 
 
-void insertFirst(char *data, short mode);
+void insertFirst(char *data);
 
 // freeAllTheList deallocate all the list structure
 void freeAllTheList(short mode);

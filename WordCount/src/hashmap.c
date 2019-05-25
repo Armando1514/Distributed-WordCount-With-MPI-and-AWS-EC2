@@ -8,56 +8,39 @@
 #include <ctype.h>
 #include <string.h>
 #include <hashmap.h>
+#include <fileparser.h>
 
-
-struct hashelement // entry table
-{
-	 struct haselement *next; // point to the next element in the chain
-	 char *word; // define the word
-	 int value; // number of occurrence for word
-};
-
-static struct hashelement *hashtab[HASHSIZE]; // pointer table
 
 
 /* hash generator for string s*/
-unsigned hash (char *s)
+int hash (char *s)
 {
-	unsigned hashval;
+	long hashval;
 	for (hashval = 0; *s != '\0'; s++) // for each character in s
 		hashval = *s + 31 * hashval; // calculate this number
-	return hashval % HASHSIZE;
+	return(int)hashval % HASHSIZE;
 
 }
 
-/* display all the elements */
-void hashmapwordreport()
-{
-	int i = 0;
-	struct hashelement * np;
-    long numberOfWords = 0;
-	while( i < HASHSIZE)
-	{
-		np = hashtab[i];
-		   while(np != NULL)// scan the list
-		  {
-			  printf("word: %s , value: %d \n", np->word,np->value);
-			  numberOfWords = numberOfWords + np->value;
-			  np =(struct hashelement*) np->next;
 
-		  }
-		  i++;
-	}
-	printf("Number of word of length > 2 : %ld\n", numberOfWords);
-}
 
 /* lookup: search s in the hashtab */
 struct hashelement *lookup(char *s)
 {
-	struct hashelement *np;
-	for (np = hashtab[hash(s)]; np != NULL; np = (struct hashelement*)np->next) // scan the list
-		if(strcmp(s, np->word) == 0) // compare the two strings
-			return np; // the word is found
+	struct hashelement *ptr = hashtab[0];
+
+	while(ptr != NULL)
+	{
+		if( strcmp(s,ptr->word) == 0)
+			return ptr;
+		else
+			return NULL;
+
+    ptr =(struct hashelement*) ptr->next;
+
+	}
+
+
 	return NULL; //the word is not found
 }
 
@@ -65,51 +48,49 @@ struct hashelement *lookup(char *s)
 void freeHashmap()
 {
 	int i = 0;
-	struct hashelement *np;
-	struct hashelement *nptmp;
+	struct hashelement *ptr;
+	struct hashelement *ptrtmp;
 
 	while (i < HASHSIZE)
 	{
-	np = hashtab[i];
-	   while(np != NULL)// scan the list
+	ptr = hashtab[i];
+	   while(ptr != NULL)// scan the list
 	  {
-		  nptmp = (struct hashelement*) np->next;
 
 		 // remove the memory corresponding to np
-		  free(&np->value);
-		  free(np->word);
-		  free(np);
+  		if(ptr->next  != NULL)
+  		ptrtmp = ptr->next;
 
-		  np = nptmp;
+  		free(ptr);
+		free(ptr->word);
+
+  		if(ptrtmp  != NULL)
+  		ptr = ptrtmp->next;
+  		else ptr= NULL;
+
 	  }
 	  i++;
 	}
 }
-
+int first = 0;
 /* insert: define the function for insert the word and the value in the hashtab */
 struct hashelement *insertwithincrement(char *word, int value)
 {
 	struct hashelement *np;
-	unsigned hashval;
 
 
 	if((np = lookup(word)) == NULL)
-	{ /* not found */
-		np = (struct hashelement *) malloc (sizeof (*np));
-        np->word = malloc (strlen(word) + 1);
-
-		if(np==NULL || (np->word = strdup(word)) == NULL)
-			return NULL;
-
-		printf("sapients: %s \n", np->word);
-		hashval = hash(word);
-
+	{
+		/* not found */
+		putinhashmap(word);
+		if(first == 0)
+		{
+			hashtab[0]->next = NULL;
+			first ++;
+		}
 		// i want count the occurrences of a word.
-		np->value = 0 + value;
+        return np;
 
-		np->next = (struct haselement *)hashtab[hashval];
-
-		hashtab[hashval] = np;
 	}
 	else
 		// i want count the occurrences of a word.
@@ -117,4 +98,25 @@ struct hashelement *insertwithincrement(char *word, int value)
 
 
 	return np;
+}
+
+
+
+
+void putinhashmap(char *data)
+{
+
+	//create a link
+	struct hashelement *link = (struct hashelement*) malloc(sizeof(struct hashelement*));
+
+    link->word = strdup(data);
+    link->value = 1;
+	//point it to old first node
+	link->next =(struct hashelement *) hashtab[0];
+
+	//point first to new first node
+	hashtab[0] = link;
+	printf("74 insert first :%s\n",hashtab[0]->word);
+
+
 }

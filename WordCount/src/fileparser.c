@@ -9,53 +9,42 @@
 #include <dirent.h>
 #include <string.h>
 #include <fileparser.h>
+#include <hashmap.h>
 
 
 
 // list of file names (internal).
-struct node *head1 = NULL;
+struct node *head = NULL;
 // names of file to analyse for each processor.
-struct node *head2 = NULL;
 
-struct node * getHeader()
-{
-	return head2;
-}
+
+
 
 struct node* getfilenamelist()
 {
-	return head1;
+	return head;
+}
+
+void setHeader(struct node *ref)
+{
+	head = ref;
 }
 
 //insert link at the first location
-void insertFirst(char *data, short mode) {
-	if(mode == 1)
-	{
+void  insertFirst(char *data) {
+
    //create a link
    struct node *link = (struct node*) malloc(sizeof(struct node));
 
    link->data = strdup(data);
 
    //point it to old first node
-   link->next = head1;
+   link->next = head;
 
    //point first to new first node
-   head1 = link;
-	}
-	else
-	{
-	//create a link
-	struct node *link = (struct node*) malloc(sizeof(struct node));
+   head = link;
 
-    link->data = strdup(data);
 
-	//point it to old first node
-	link->next = head2;
-
-	//point first to new first node
-	head2 = link;
-
-	}
 
 }
 
@@ -63,7 +52,7 @@ void insertFirst(char *data, short mode) {
 
 //return the number of file
 int numberOfFile() {
-   struct node *ptr = head1;
+   struct node *ptr = head;
    int i = 0;
    //start from the beginning
    while(ptr != NULL) {
@@ -75,32 +64,19 @@ int numberOfFile() {
 }
 
 // freeAllTheList deallocate all the list structure
-void freeAllTheList(short mode)
+void freeAllTheLists(short mode)
 {
+
    struct node *np;
    struct node *nptmp;
    if(mode == 1)
    {
-	   np = head1;
+	   np = head;
 
 	   while(np != NULL)
 	   {
 		   nptmp = np->next;
 		   free(np->data);
-		   free(np->next);
-		   free(np);
-		   np = nptmp;
-	   }
-   }
-   else
-   {
-	   np = head2;
-
-	   while(np != NULL)
-	   {
-		   nptmp = np->next;
-		   free(np->data);
-		   free(np->next);
 		   free(np);
 		   np = nptmp;
 	   }
@@ -144,7 +120,6 @@ long getTotalFileSizes()
 		totalSize = totalSize + singleSize;
         ptr->size = singleSize;
 		ptr = ptr->next;
-
 
 	}
 	return totalSize;
@@ -190,11 +165,11 @@ struct  node* listOfFileNames()
     {
     		if( (strcmp(de->d_name, ".")) && (strcmp(de->d_name, "..")) )
     		{
-    				insertFirst(calculatePathString(de->d_name),1);
+    				insertFirst(calculatePathString(de->d_name));
     		}
 
     }
     closedir(dr);
-    return head1;
+    return head;
 
 }

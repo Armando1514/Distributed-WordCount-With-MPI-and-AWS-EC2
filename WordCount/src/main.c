@@ -8,6 +8,7 @@
 #include <ctype.h>
 #include <sys/time.h>
 #include <fileparser.h>
+#include <hashmap.h>
 #include <workerhelper.h>
 
 int main (int argc, char *argv[])
@@ -50,34 +51,52 @@ int main (int argc, char *argv[])
        }
 
     	   // return a list of file that i need to analyze
-    	   myPortion = whichIsMyPortion(start, chunk_size);
+    	   myPortion = whichIsMyPortion(0, 16);
+          int i = 0;
+          while(myPortion != NULL && myPortion->data != NULL )
+          {
+
+        	  printf("scusa:%s\n",myPortion->data);
+        	  fp = fopen(myPortion->data,"r");
+        	   if (fp == NULL)
+        	   		      {
+        	   		    	  perror("Error while opening the file.\n");
+        	   		      }
+	    	  buildfrequencieshash(fp);
 
 
-    	   struct node * np;
-           short i=0;
+        	       if(i == 0){
+        	       fseek(fp, start, SEEK_SET);
+        	       i++;
+        	       }
+        	       fclose(fp);
+
+        	myPortion = myPortion->next;
+          }
     	   // if there are other files to read
-    	   for (np = myPortion; np != NULL; np = (struct node*)np->next)
-    	   {
-    		   // open the  files from the list
-    		    	   fp = fopen(np->data, "r"); // read mode
-
-    		    	   if (fp == NULL)
-    		    	   {
-    		    	        perror("Error while opening the file.\n");
-    		    	        exit(EXIT_FAILURE);
-    		    	   }
-
-
     		          // rationale, if the last worker stop to read in the middle of a word, it ends to read the word.
     		    	 // the next worker does not read the same word.
 
-    		    	   buildfrequencieshash(fp);
-    	   }
-
 
     }//the slaves
-    hashmapwordreport();
+
+
+
+    /* display all the elements */
+    /* lookup: search s in the hashtab */
+
+    	struct hashelement *ptr = hashtab[0];
+
+    	while(ptr != NULL)
+    	{
+
+        if(ptr != NULL && ptr->word!=NULL){
+        printf("%s\n",ptr->word);
+        ptr =(struct hashelement*) ptr->next;
+        }
+    	}
+
 
        	   /* display all the elements */
-       	   printf("ok");
+       	   printf("\n ok");
 }

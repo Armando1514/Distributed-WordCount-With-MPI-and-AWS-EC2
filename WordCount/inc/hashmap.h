@@ -10,6 +10,17 @@
 #define HASHMAP_H_
 #define HASHSIZE 1
 
+struct hashelement // entry table
+{
+	 struct haselement *next; // point to the next element in the chain
+	 char *word; // define the word
+	 int value; // number of occurrence for word
+};
+
+struct hashelement *hashtab[HASHSIZE]; // pointer table
+
+
+
 /* display all the elements */
 void hashmapwordreport();
 
