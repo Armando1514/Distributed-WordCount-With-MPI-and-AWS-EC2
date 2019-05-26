@@ -1,37 +1,37 @@
 /*
 * Name        : hashmap.h
 * Author      : Armando Ferrara
-* Define a simple hashmap with function for isnert and search.
+* Define a simple hashmap with function for insert and search.
 *
  */
 
-
 #ifndef HASHMAP_H_
 #define HASHMAP_H_
-#define HASHSIZE 2
 
-struct hashelement // entry table
-{
-	 struct haselement *next; // point to the next element in the chain
-	 char *word; // define the word
-	 int value; // number of occurrence for word
+//the size of the hashmap
+#define HASHSIZE 500
+
+struct hash_element // entry table
+    {
+    struct hash_element* next; // point to the next element in the chain
+    char* word; // define the word
+    int value; // number of occurrence for word
 };
 
-struct hashelement *hashtab[HASHSIZE]; // pointer table
+struct hash_element* hash_tab[HASHSIZE]; // pointer table
 
+/* report_hash_elements():
+ * display the hash elements and
+ * the computation timing */
+void report_hash_elements();
 
-/* display all the elements */
-void displayhashelement();
+/* insert_or_increment(char *s):
+ * if there is yet the node, increments the value,
+ * if not, allocates a new node with value to 1. */
+void insert_or_increment(char* s);
 
-
-
-
-
-
-/* insert: define the function for insert the word and the value in the hashtab */
-void insertwithincrement(char *word);
-
-/* freeHashmap: deallocate all the hashmap structure */
-void freeHashmap();
+/* free_hashmap():
+ *  deallocate all the hashmap structure */
+void free_hashmap();
 
 #endif /* HASHMAP_H_ */
