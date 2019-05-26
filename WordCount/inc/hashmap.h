@@ -8,7 +8,7 @@
 
 #ifndef HASHMAP_H_
 #define HASHMAP_H_
-#define HASHSIZE 1
+#define HASHSIZE 2
 
 struct hashelement // entry table
 {
@@ -20,16 +20,16 @@ struct hashelement // entry table
 struct hashelement *hashtab[HASHSIZE]; // pointer table
 
 
-
 /* display all the elements */
-void hashmapwordreport();
+void displayhashelement();
+
 
 
 
 
 
 /* insert: define the function for insert the word and the value in the hashtab */
-struct hashelement *insertwithincrement(char *word, int value);
+void insertwithincrement(char *word);
 
 /* freeHashmap: deallocate all the hashmap structure */
 void freeHashmap();

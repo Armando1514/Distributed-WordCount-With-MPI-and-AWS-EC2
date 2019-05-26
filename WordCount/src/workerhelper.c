@@ -4,12 +4,13 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
 #include <workerhelper.h>
 #include <fileparser.h>
 #include <hashmap.h>
-
+#define MAXWORDLENGTH 500
 
 
 /* Function to delete the entire linked list */
@@ -40,70 +41,66 @@ struct node * whichIsMyPortion(long start, long chunkSize)
 	char * pathString ;
 	long tempSize = current->size ;
 
-        // the file to analyse is the first
+        // the file to analyze is the first
         if(tempSize > start)
         {
+	           printf("a4:%s\n",current->data);
 
         	next = current->next;
         	pathString = current->data;
+
         	current = next;
-        	printf("1: %d\n",tempSize);
         }
         else{
         	tempSize = 0;
     	//scroll until you don't reach the file to analyze
-    	while(current != NULL)
+    	while(current != NULL && tempSize < start)
     	{
+
+
     		 next = current->next;
 
     		 pathString = current->data;
+
     		 tempSize = tempSize + current->size;
+
     		 // i don't need to analyze this file, i'm able to delete it.
     		 if(tempSize < start)
     		 {
-
     		 free(current->data);
     		 free(current);
     		 setHeader(next);
     		 }
 
              current = next;
-         	printf("2: %d\n",tempSize);
 
     	}
 
         }
     //remove the bytes yet analyzed
     tempSize = tempSize - start;
-	printf("tempsize 1: %d\n",tempSize);
-	printf("start 1: %d\n",start);
-	printf("chunk 1: %d\n",chunkSize);
 
     //we can need more than one file, if we need of more bytes.
     while(current != NULL && tempSize < chunkSize)
         {
+    	printf("a1:%s\n",current->data);
 	         tempSize = tempSize + current->size;
     	     next = current->next;
     	     current = next;
-         	printf("3: %d\n",tempSize);
+
 
         }
 
-    //remove (free) the other elements in the list after the current node
-    while(current != NULL)
+    //remove the other elements in the list after the current node
+    if(current != NULL)
         	{
 
-
     	           next = current->next;
-    	           free(current->data);
-    	    	   free(current);
 
+    	           current->data = NULL;
     	    	   current = next;
 
         	}
-
- 	printf("4: %d\n",tempSize);
-
 
 
     return getfilenamelist();
@@ -111,17 +108,39 @@ struct node * whichIsMyPortion(long start, long chunkSize)
     }
 
 
-void buildfrequencieshash(FILE* fp) {
+long buildfrequencieshash(FILE* fp, long wordToCount, long wordCounted) {
 
 
-	int ch;
-	char str[500];
-	memset(str, 0, 500);
+	    int ch;
+		char str[MAXWORDLENGTH];
+		memset(str, 0, MAXWORDLENGTH);
+		int i = 0;
 
-	int i = 0;
+
+		//if the last slave read your word, ignore the word until the next non alphanumeric value
+		if(ftell(fp) != 0)
+		{
+
+			if(isalnum(ch = fgetc(fp)) )
+			{
+
+				wordCounted ++;
 
 
-	while((ch = fgetc(fp)) != EOF)
+				// read until there are character to read
+				while(isalnum(ch = fgetc(fp)))
+				{
+
+					wordCounted ++;
+
+				}
+
+			}
+		}
+
+
+
+	while(  wordToCount > wordCounted && (ch = fgetc(fp)) != EOF)
 	{
 
 		// if is not a space and is not a punctuation and is alphanumeric
@@ -133,8 +152,21 @@ void buildfrequencieshash(FILE* fp) {
 
 			str[i] = ch;
 
-
 			i++;
+
+			if(i > MAXWORDLENGTH)
+						{
+							memset(str, 0, 500);
+							i = 0;
+
+						//ignore the word
+						while(isalnum(ch = fgetc(fp)))
+							{
+
+							 wordCounted ++;
+
+							}
+						}
 		}
 		else
 		{
@@ -142,27 +174,92 @@ void buildfrequencieshash(FILE* fp) {
 			// a word is composed min by two characters
 			if(i > 1)
 			//insert the word and increment the value
-			insertwithincrement(str, 1);
+			insertwithincrement(str);
 
 			//reset the string buffer
 		    memset(str, 0, i+1);
 		    i = 0;
 
 		}
-
+		wordCounted ++;
 
 	}
-	// Insert the last word
-		//insert the word and increment the value
-		if(i > 1)
-			{
-				insertwithincrement(str, 1);
 
-			}
-			//reset the string buffer
-			memset(str, 0, i+1);
-			i = 0;
+//insert the last word
+if(ch == EOF && i > 1)
+{
+	insertwithincrement(str);
 
 }
+		//if the reading is stopped during the scan of a word, finish to read it
+			if(i > 0 && isalnum(ch))
+			{
+				// read until there are character to read
+				while(isalnum(ch = fgetc(fp)))
+				{
+					if (ch > 96 && ch < 123)
+									ch -= 32;
+				 str[i] = ch;
+				 if(i > MAXWORDLENGTH)
+				 {
+				 				memset(str, 0, 500);
+				 				i = 0;
+
+				 			//ignore the word
+				 			while(isalnum(ch = fgetc(fp)))
+				 				{
+
+				 				 wordCounted ++;
+
+				 				}
+				 }
+				 i++;
+				 // for statistic use
+		         wordCounted ++;
+				}
+
+				insertwithincrement(str);
+			}
+
+			return wordCounted;
+}
+
+
+void calculatewordfrequencies(long start, long chunk_size)
+{
+    FILE *fp; /* reference to the file */
+
+    struct node * myPortion = whichIsMyPortion(start, chunk_size); /* my portion file to read */
+
+    int i = 0;
+
+    long wordCounted = 0;
+
+	while(myPortion != NULL && myPortion->data != NULL )
+	{
+		if(wordCounted > chunk_size)
+		{
+			perror("likely an error at line 242\n");
+		}
+		fp = fopen(myPortion->data,"r");
+
+		  if(i == 0)
+		  {
+		  	fseek(fp, start, SEEK_SET);
+		  	i++;
+		  }
+
+          //start to count the word in the file
+		  wordCounted = wordCounted + buildfrequencieshash(fp, chunk_size, wordCounted);
+
+
+	    fclose(fp);
+
+		myPortion = myPortion->next;
+	}
+
+
+}
+
 
 

@@ -8,9 +8,6 @@
 #ifndef WORKERHELPER_H_
 #define WORKERHELPER_H_
 
-/* whichIsMyPortion: assign the correct number of file to analyze */
-struct node * whichIsMyPortion(long start, long chunkSize);
-
-void buildfrequencieshash(FILE* fp) ;
+void calculatewordfrequencies(long start, long chunk_size);
 
 #endif /* WORKERHELPER_H_ */

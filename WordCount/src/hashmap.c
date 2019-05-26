@@ -22,23 +22,40 @@ int hash (char *s)
 
 }
 
+/* display: display the hash elements */
+void displayhashelement()
+{
+	struct hashelement *ptr;
+	int i = 0;
+	while (i < HASHSIZE)
+		{
+		   ptr = hashtab[i];
+		   while(ptr != NULL)// scan the list
+		  {
+
+			printf("36. word: %s, occurrence/s: %d \n",ptr->word, ptr->value);
+			ptr =(struct hashelement*) ptr->next;
+
+		  }
+		  i++;
+		}
+}
+
+
 
 
 /* lookup: search s in the hashtab */
 struct hashelement *lookup(char *s)
 {
-	struct hashelement *ptr = hashtab[0];
+	struct hashelement *ptr = hashtab[hash(s)];
 
-	while(ptr != NULL)
-	{
-		if( strcmp(s,ptr->word) == 0)
-			return ptr;
-		else
-			return NULL;
+		while(ptr != NULL)
+			{
+			if( strcmp(s,ptr->word) == 0)
+				return ptr;
+			ptr =(struct hashelement*) ptr->next;
 
-    ptr =(struct hashelement*) ptr->next;
-
-	}
+	       }
 
 
 	return NULL; //the word is not found
@@ -72,32 +89,28 @@ void freeHashmap()
 	  i++;
 	}
 }
-int first = 0;
+
+
 /* insert: define the function for insert the word and the value in the hashtab */
-struct hashelement *insertwithincrement(char *word, int value)
+void insertwithincrement(char *word)
 {
 	struct hashelement *np;
-
 
 	if((np = lookup(word)) == NULL)
 	{
 		/* not found */
 		putinhashmap(word);
-		if(first == 0)
-		{
-			hashtab[0]->next = NULL;
-			first ++;
-		}
+
 		// i want count the occurrences of a word.
-        return np;
 
 	}
-	else
+	else{
 		// i want count the occurrences of a word.
-		np->value = np->value + value;
+		np->value = np->value + 1;
+
+	}
 
 
-	return np;
 }
 
 
@@ -110,13 +123,14 @@ void putinhashmap(char *data)
 	struct hashelement *link = (struct hashelement*) malloc(sizeof(struct hashelement*));
 
     link->word = strdup(data);
+
     link->value = 1;
+
 	//point it to old first node
-	link->next =(struct hashelement *) hashtab[0];
+	link->next =(struct hashelement *) hashtab[hash(data)];
 
 	//point first to new first node
-	hashtab[0] = link;
-	printf("74 insert first :%s\n",hashtab[0]->word);
+	hashtab[hash(data)] = link;
 
 
 }
