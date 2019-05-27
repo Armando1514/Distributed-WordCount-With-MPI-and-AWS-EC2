@@ -11,14 +11,13 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
-#include <workerhelper.h>
-#include <fileparser.h>
-#include <hashmap.h>
 
-// maximum word length
-#define MAXWORDLENGTH 500
-// minimum for considering a sequence of character as a word
-#define MINWORDLENGTH 2
+#include "../include/hashmap.h"
+
+#include "../include/fileparser.h"
+
+
+#include "../include/workerhelper.h"
 
 /*
  * __which_is_my_portion(long start, long chunkSize):
@@ -95,7 +94,8 @@ long __build_frequencies_hash(FILE* fp, long word_to_count, long word_counted)
 
     int ch;
     char str[MAXWORDLENGTH];
-    memset(str, 0, MAXWORDLENGTH);
+
+    memset(str, '\0', MAXWORDLENGTH);
     int i = 0;
 
     //if the last slave read your word, ignore the word until the next non alphanumeric value
@@ -112,8 +112,9 @@ long __build_frequencies_hash(FILE* fp, long word_to_count, long word_counted)
         }
     }
 
-    while (word_to_count > word_counted && (ch = fgetc(fp)) != EOF) {
-        word_counted++;
+    //also if the process is stopped during the reading of a character, it still finish to analyze it.
+    while (((word_to_count > word_counted) || (i > 0) ) && (ch = fgetc(fp)) != EOF) {
+
 
         // if is not a space and is not a punctuation and is alphanumeric
         if (isalnum(ch)) {
@@ -121,11 +122,12 @@ long __build_frequencies_hash(FILE* fp, long word_to_count, long word_counted)
             if (ch > 96 && ch < 123)
                 ch -= 32;
 
+
             str[i] = ch;
             i++;
 
             if (i > MAXWORDLENGTH) {
-                memset(str, 0, 500);
+                memset(str, '\0', MAXWORDLENGTH);
                 i = 0;
 
                 //ignore the word
@@ -138,50 +140,35 @@ long __build_frequencies_hash(FILE* fp, long word_to_count, long word_counted)
         else {
 
             // a word is composed min by two characters
-            if (i > MINWORDLENGTH)
+            if (i > MINWORDLENGTH) {
+
+                str[i] = '\0';
                 //insert the word and increment the value
                 insert_or_increment(str);
 
+            }
+
             //reset the string buffer
-            memset(str, 0, i + 1);
+            memset(str, '\0', i );
             i = 0;
         }
+
+        word_counted++;
+
     }
 
     //insert the last word
     if (ch == EOF && i > MINWORDLENGTH) {
-
+        str[i] = '\0';
         insert_or_increment(str);
-        memset(str, 0, i + 1);
+
+        memset(str, '\0', i);
 
         i = 0;
     }
-    //if the reading is stopped during the scan of a word, finish to read it
-    if (i > 0 && isalnum(ch)) {
 
-        // read until there are character to read
-        while (isalnum(ch = fgetc(fp))) {
-            if (ch > 96 && ch < 123)
-                ch -= 32;
-            str[i] = ch;
-            if (i > MAXWORDLENGTH) {
-                memset(str, 0, 500);
-                i = 0;
 
-                //ignore the word
-                while (isalnum(ch = fgetc(fp))) {
-
-                    word_counted++;
-                }
-            }
-            i++;
-            // for statistic use
-            word_counted++;
-        }
-
-        insert_or_increment(str);
-    }
-
+    memset(str, '\0', i );
     return word_counted;
 }
 
@@ -200,20 +187,28 @@ void calculate_word_frequencies(long start, long chunk_size)
     long word_counted = 0;
 
     while (my_portion != NULL && my_portion->data != NULL && word_counted < chunk_size) {
+        printf("%s\n ",my_portion->data);
+
         fp = fopen(my_portion->data, "r");
+
+        if(fp==NULL)
+          perror("Error in file opening at line 200 in the file workerhelper.c");
 
         if (i == 0) {
             fseek(fp, start, SEEK_SET);
             i++;
         }
 
+
         //start to count the word in the file
         word_counted = __build_frequencies_hash(fp, chunk_size, word_counted);
+
 
         fclose(fp);
 
         my_portion = my_portion->next;
     }
+
 }
 
 /* calculate_total_number_of_bytes():
@@ -221,8 +216,8 @@ void calculate_word_frequencies(long start, long chunk_size)
  */
 long calculate_total_number_of_bytes()
 {
-       // get the total number of bytes by the sum of all the byte size from files
-	       return get_total_file_sizes();
+    // get the total number of bytes by the sum of all the byte size from files
+    return get_total_file_sizes();
 
 }
 
@@ -234,9 +229,9 @@ long calculate_total_number_of_bytes()
 
 void deallocate_the_lists()
 {
-	free_the_list_of_files();
+    free_the_list_of_files();
 
-	free_hashmap();
+    free_hashmap();
 }
 
 /* report_execution(long execution_time)
@@ -246,8 +241,9 @@ void deallocate_the_lists()
 
 void report(long execution_time)
 {
-	printf("START REPORT:\n");
-	report_hash_elements();
-	printf("END REPORT:\n");
+    printf("START REPORT:\n");
+    report_hash_elements();
+    printf("END REPORT:\n");
 
 }
+

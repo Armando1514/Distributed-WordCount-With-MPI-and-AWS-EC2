@@ -12,7 +12,7 @@
 #define HASHSIZE 500
 
 struct hash_element // entry table
-    {
+{
     struct hash_element* next; // point to the next element in the chain
     char* word; // define the word
     int value; // number of occurrence for word
@@ -28,6 +28,7 @@ void report_hash_elements();
 /* insert_or_increment(char *s):
  * if there is yet the node, increments the value,
  * if not, allocates a new node with value to 1. */
+
 void insert_or_increment(char* s);
 
 /* free_hashmap():

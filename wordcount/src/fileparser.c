@@ -9,7 +9,8 @@
 #include <stdlib.h>
 #include <dirent.h>
 #include <string.h>
-#include <fileparser.h>
+
+#include "../include/fileparser.h"
 
 // head for the list file names (internal).
 struct node* head = NULL;
@@ -74,7 +75,7 @@ char* __calculate_path_string(char* name_file)
 {
     char* result = malloc(strlen(PATHMODE) + strlen(FILEPATH) + strlen(PATHMODE) + strlen(name_file) + 2);
 
-    strcpy(result, ".");
+    strcpy(result, "..");
     strcat(result, PATHMODE);
     strcat(result, FILEPATH);
     strcat(result, PATHMODE);
@@ -90,16 +91,15 @@ struct node* list_of_file_path()
 
     char* result = malloc(strlen(FILEPATH) + strlen(PATHMODE) + 1);
 
-    strcpy(result, ".");
+    strcpy(result, "..");
     strcat(result, PATHMODE);
     strcat(result, FILEPATH);
-
     // opendir() returns a pointer of DIR type.
     DIR* dr = opendir(result);
 
     if (dr == NULL) // opendir returns NULL if couldn't open directory
     {
-        printf("Error, is not possible to open the current directory");
+        perror("Error, is not possible to open the current directory");
         return NULL;
     }
 
@@ -134,6 +134,7 @@ void free_the_list_of_files()
 
 struct node* get_header_list()
 {
-	return head;
+    return head;
 }
+
 

@@ -10,6 +10,12 @@
 #ifndef WORKERHELPER_H_
 #define WORKERHELPER_H_
 
+// maximum word length
+#define MAXWORDLENGTH 500
+// minimum for considering a sequence of character as a word
+#define MINWORDLENGTH 2
+
+
 /*
  * calculate_word_frequencies(long start, long chunk_size):
  * calculate the word frequencies for each file.
