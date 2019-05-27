@@ -57,6 +57,7 @@ struct node* __which_is_my_portion(long start, long chunk_size)
                 free(current->data);
                 free(current);
                 head_list = next;
+
             }
 
             current = next;
@@ -82,7 +83,7 @@ struct node* __which_is_my_portion(long start, long chunk_size)
         current = next;
     }
 
-    return get_header_list();
+    return head_list;
 }
 
 /*
@@ -181,13 +182,14 @@ void calculate_word_frequencies(long start, long chunk_size)
     FILE* fp; /* reference to the file */
 
     struct node* my_portion = __which_is_my_portion(start, chunk_size); /* my portion file to read */
+    printf("--------------------184\n");
 
     int i = 0;
 
     long word_counted = 0;
 
     while (my_portion != NULL && my_portion->data != NULL && word_counted < chunk_size) {
-        printf("%s\n ",my_portion->data);
+        printf("FILE:%s\n ",my_portion->data);
 
         fp = fopen(my_portion->data, "r");
 

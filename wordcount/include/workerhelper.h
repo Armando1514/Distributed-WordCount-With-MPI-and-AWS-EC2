@@ -12,8 +12,8 @@
 
 // maximum word length
 #define MAXWORDLENGTH 500
-// minimum for considering a sequence of character as a word
-#define MINWORDLENGTH 2
+// minimum for considering a sequence of character as a word, starting from value 0.
+#define MINWORDLENGTH 0
 
 
 /*
