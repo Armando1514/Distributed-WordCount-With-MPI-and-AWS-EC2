@@ -27,11 +27,11 @@ struct hash_element* get_hash_head();
  * the computation timing */
 void report_hash_elements();
 
-/* insert_or_increment(char *s):
+/* insert_or_increment(char *s, int value):
  * if there is yet the node, increments the value,
  * if not, allocates a new node with value to 1. */
 
-void insert_or_increment(char* s);
+void insert_or_increment(char* s, int value);
 
 /* free_hashmap():
  *  deallocate all the hashmap structure */

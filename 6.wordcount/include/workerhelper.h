@@ -11,7 +11,7 @@
 #define WORKERHELPER_H_
 
 // maximum word length
-#define MAXWORDLENGTH 1000
+#define MAXWORDLENGTH 500
 // minimum for considering a sequence of character as a word, starting from value 0.
 #define MINWORDLENGTH 0
 

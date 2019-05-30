@@ -56,7 +56,6 @@ struct node* __which_is_my_portion(long * start, long chunk_size)
 
             // i don't need to analyze this file, i'm able to delete it.
             if (temp_size < tmp_start) {
-                printf("VALUE: %ld , TEMP_SIZE : %ld \n",*start,temp_size);
 
                 // subtract the file from start
                 *start = *start - current->size;
@@ -147,7 +146,7 @@ long __build_frequencies_hash(FILE* fp, long word_to_count, long word_counted)
 
                 str[i] = '\0';
                 //insert the word and increment the value
-                insert_or_increment(str);
+                insert_or_increment(str,1);
 
             }
 
@@ -164,7 +163,7 @@ long __build_frequencies_hash(FILE* fp, long word_to_count, long word_counted)
     if (ch == EOF && i > MINWORDLENGTH) {
         str[i] = '\0';
 
-        insert_or_increment(str);
+        insert_or_increment(str,1);
 
         memset(str, '\0', i);
 
@@ -192,7 +191,6 @@ void calculate_word_frequencies(long start, long chunk_size)
     long word_counted = 0;
 
     while (my_portion != NULL && my_portion->data != NULL && word_counted < chunk_size) {
-        printf("START:%ld CHUNK:%ld ,PATH: %s\n",start,chunk_size,my_portion->data);
 
         fp = fopen(my_portion->data, "r");
 
@@ -247,8 +245,8 @@ void deallocate_the_lists()
 
 void report(long execution_time)
 {
-    printf("START REPORT:\n");
-    report_hash_elements();
+    printf("START REPORT %ld \n ",execution_time);
+    report_hash_elements(execution_time);
     printf("END REPORT:\n");
 
 }

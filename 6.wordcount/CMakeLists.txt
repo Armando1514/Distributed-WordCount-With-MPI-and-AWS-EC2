@@ -25,9 +25,12 @@ target_include_directories(workerhelper PUBLIC ${PROJECT_SOURCE_DIR}/include)
 add_library(hashmap STATIC src/hashmap.c)
 target_include_directories(hashmap PUBLIC ${PROJECT_SOURCE_DIR}/include)
 
+add_library(mpihelper STATIC src/mpihelper.c)
+target_include_directories(mpihelper PUBLIC ${PROJECT_SOURCE_DIR}/include)
+
 
 # Define the (only) executable of the project
 add_executable(${PROJECT_NAME} src/main.c)
 
 # Link libraries
-target_link_libraries(${PROJECT_NAME} PRIVATE workerhelper fileparser  hashmap  -lssl -lcrypto)
+target_link_libraries(${PROJECT_NAME} PRIVATE  workerhelper fileparser  hashmap mpihelper -lssl -lcrypto)

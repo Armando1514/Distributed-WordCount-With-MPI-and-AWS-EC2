@@ -33,7 +33,7 @@ int __hash(char* s)
 /* report_hash_elements():
  * display the hash elements and
  * the computation timing */
-void report_hash_elements()
+void report_hash_elements(long test)
 {
     struct hash_element* ptr;
     int i = 0;
@@ -49,7 +49,7 @@ void report_hash_elements()
         i++;
     }
 
-    printf("Total number of words analyzed: %d\n",total_word);
+    printf("Total number of words analyzed: %d TEST ---- %ld \n",total_word,test);
 }
 
 
@@ -102,7 +102,7 @@ void free_hashmap()
  * insert the element in the right position
  * into the hashmap
  */
-void __put_in_hashmap(char* s)
+void __put_in_hashmap(char* s, int value)
 {
 
 
@@ -111,7 +111,7 @@ void __put_in_hashmap(char* s)
 
     strcpy(link->word,s);
 
-    link->value = 1;
+    link->value = value;
 
     //point it to old first node
     link->next = (struct hash_element*)hash_tab[__hash(s)];
@@ -127,20 +127,23 @@ struct hash_element* get_hash_head(){
 /* insert_or_increment(char *s):
  * if there is yet the node, increments the value,
  * if not, allocates a new node with value to 1. */
-void insert_or_increment(char* s)
+void insert_or_increment(char* s, int value)
 {
     struct hash_element* np;
 
-    // search the element
-    if ((np = __lookup(s)) == NULL) {
-        /* not found */
-        __put_in_hashmap(s);
+    if(s[0] != '\0')
+    {
+        // search the element
+        if ((np = __lookup(s)) == NULL) {
+            /* not found */
+            __put_in_hashmap(s, value);
 
-        // i want count the occurrences of a word.
-    }
-    else {
-        // i want count the occurrences of a word.
-        np->value = np->value + 1;
+            // i want count the occurrences of a word.
+        } else {
+            // i want count the occurrences of a word.
+            np->value = np->value + value;
+        }
     }
 }
+
 
