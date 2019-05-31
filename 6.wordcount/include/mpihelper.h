@@ -6,7 +6,7 @@
 #define WORDCOUNT_MPIHELPER_H
 
 // number have to be > 2 for overhead reasons.
-#define WORDONTHENETWORK 5
+#define WORDONTHENETWORK 50
 
 
 

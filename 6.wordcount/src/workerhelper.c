@@ -198,7 +198,7 @@ void calculate_word_frequencies(long start, long chunk_size)
           perror("Error in file opening at line 200 in the file workerhelper.c");
 
         if (i == 0) {
-            fseek(fp, start, SEEK_SET);
+            fseek(fp, start -1, SEEK_SET);
             i++;
         }
 
@@ -243,11 +243,9 @@ void deallocate_the_lists()
  * and each word - occurrences values.
  */
 
-void report(long execution_time)
+void report(float execution_time, short my_rank)
 {
-    printf("START REPORT %ld \n ",execution_time);
-    report_hash_elements(execution_time);
-    printf("END REPORT:\n");
+    report_hash_elements(execution_time,my_rank);
 
 }
 

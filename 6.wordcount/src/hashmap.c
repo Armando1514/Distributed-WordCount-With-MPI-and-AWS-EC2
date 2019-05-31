@@ -22,7 +22,7 @@ int __hash(char* s)
     {
         hash_val = s[i] + 31 * hash_val; // calculate this number
         if((int)hash_val < 0)
-           hash_val = hash_val * -1;
+            hash_val = hash_val * -1;
         i++;
 
     }
@@ -33,23 +33,50 @@ int __hash(char* s)
 /* report_hash_elements():
  * display the hash elements and
  * the computation timing */
-void report_hash_elements(long test)
-{
+void report_hash_elements(float execution_time, short my_rank) {
     struct hash_element* ptr;
     int i = 0;
-    int total_word = 0;
+    long total_word = 0;
+
+    FILE *fptr;
+    char there_was_error = 0;
+
+    char filename[500];
+
+
+    sprintf(filename, "%s%d%s","../results/analysisreport_by_process_number_",my_rank,".txt");
+
+    fptr = fopen(filename, "w");
+
+    if(fptr == NULL) //if file does not exist, create it
+    {
+        perror("Disc full or no file  permission\n");
+
+    }
+
+    fprintf(fptr, "START REPORT FOR PROCESS WITH RANK %d: \n", my_rank);
 
     while (i < HASHSIZE) {
         ptr = hash_tab[i];
         while (ptr != NULL) // scan the list
         {
             total_word = total_word + ptr->value;
+
+            fprintf(fptr, "%s %s --- %s %d  \n", "Word: ", ptr->word, "Value: ", ptr->value);
+
             ptr = (struct hash_element*)ptr->next;
         }
         i++;
     }
+    if(my_rank == 0)
+    {
+        printf("END OF THE PROCESS, THE TOTAL NUMBER OF WORDS ANALYZED IS : %ld \nTOTAL TIME EXECUTION: %f \nGO IN THE 'results' FOLDER FOR FURTHER DETAILS.\n",total_word,(float)execution_time);
+    }
+//converts the time to float
+    fprintf(fptr, "END REPORT.\n TOTAL EXECUTION TIME: %f seconds \n TOTAL WORDS ANALYZED: %ld  \n",(float)execution_time,total_word);
 
-    printf("Total number of words analyzed: %d TEST ---- %ld \n",total_word,test);
+    fclose(fptr);
+
 }
 
 
@@ -145,5 +172,3 @@ void insert_or_increment(char* s, int value)
         }
     }
 }
-
-

@@ -39,7 +39,7 @@ long calculate_total_number_of_bytes();
  * report in a file the total execution time
  * and each word - occurrences values.
  */
-void report(long execution_time);
+void report(float execution_time, short my_rank);
 
 
 #endif /* WORKERHELPER_H_ */

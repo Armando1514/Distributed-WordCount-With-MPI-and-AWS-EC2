@@ -46,10 +46,12 @@ int main(int argc, char* argv[])
     // get the total number of bytes by the sum of all the byte size from files
     total_number_of_byte = calculate_total_number_of_bytes();
 
+    t1 = MPI_Wtime();
+
+
     if (my_rank == 0) {
 
 
-        t1 = MPI_Wtime();
 
 
         printf("number of processes: %d \n", num_proc);
@@ -89,16 +91,12 @@ int main(int argc, char* argv[])
                     &row[0] , 2, MPI_LONG, 0, MPI_COMM_WORLD);
         //calculate the word frequencies for the master
         calculate_word_frequencies(0, row[1]);
-        report(0);
 
 
         master_receiver(num_proc);
 
-        report(10);
 
 
-
-        t2 = MPI_Wtime();
 
 
     }//the slaves
@@ -109,10 +107,11 @@ int main(int argc, char* argv[])
 
         calculate_word_frequencies(row[0], row[1]);
        worker_sender();
-       report(1);
 
     }
+    t2 = MPI_Wtime();
 
+    report(t2-t1,my_rank);
 
     MPI_Finalize();
     return 0;

@@ -67,7 +67,7 @@ void master_receiver(int num_proc)
     MPI_Status status;
 
 
-    MPI_Datatype restype;
+    MPI_Datatype * restype;
     int i=0;
     int recv = 0;
     int sinc = 0;
@@ -76,6 +76,7 @@ void master_receiver(int num_proc)
     num_proc--;
     struct send_structure * x  = malloc(sizeof(struct send_structure));
 
+    int send2 = 0;
 
     restype = __define_mpi_type();
 
@@ -84,7 +85,6 @@ void master_receiver(int num_proc)
         //recv from anyone
         MPI_Recv(x, 1, restype, MPI_ANY_SOURCE, 50, MPI_COMM_WORLD, &status);
 
-
         if(x->word[0][0] == '\0'){
 
             num_proc --;
@@ -92,11 +92,11 @@ void master_receiver(int num_proc)
         else {
 
             sinc = WORDONTHENETWORK - 1;
-            while (sinc >= 0) {
+            while (sinc >= 0 ) {
 
+                insert_or_increment(x->word[sinc], x->value[sinc]);
+                send2 = send2 + x->value[sinc];
 
-
-                    insert_or_increment(x->word[sinc], x->value[sinc]);
                 sinc = sinc - 1;
             }
 
@@ -107,11 +107,11 @@ void master_receiver(int num_proc)
         i = WORDONTHENETWORK;
         int l = 0;
         i--;
-        while (i >= 0 &&  l < MAXWORDLENGTH) {
+        while (i >= 0 ) {
 
             l = 0;
 
-            while (x->word[i][l] != '\0' &&  i < WORDONTHENETWORK && l < MAXWORDLENGTH) {
+            while (x->word[i][l] != '\0' ) {
                 x->word[i][l] = '\0';
 
                 l++;
@@ -122,6 +122,7 @@ void master_receiver(int num_proc)
         }
     }
 
+    printf("MORE %d \n",send2);
 
 
     printf("TIMEEEEEEEEEE: %lf , RECVVVVVVV : %d  OCCURRENCE : %d\n",recv,occurrence);
@@ -136,7 +137,7 @@ void worker_sender()
 
     struct send_structure * x= malloc(sizeof(struct send_structure));
     /*DEFINE A DERIVED MPI TYPE */
-    MPI_Datatype restype;
+    MPI_Datatype *restype;
 
     restype = __define_mpi_type();
 
@@ -169,23 +170,26 @@ void worker_sender()
             if(j == (WORDONTHENETWORK ) ) {
 
 
-
                 MPI_Ssend(x, 1, restype, 0, 50, MPI_COMM_WORLD);
 
                 int l = 0;
                  j--;
                 while (j >= 0  ) {
-                    l = 0;
-                    while (x->word[j][l] != '\0' &&  j < WORDONTHENETWORK && l < MAXWORDLENGTH) {
+
+                    while (x->word[j][l] != '\0'  ) {
 
 
                         x->word[j][l] = '\0';
+
 
                         l++;
                     }
 
 
                     x->value[j] = 0;
+
+                    l = 0;
+
                     j--;
                 }
                 j = 0;
@@ -197,8 +201,11 @@ void worker_sender()
 
     }
 
+
     //NOT SENT
-    if((j != (WORDONTHENETWORK ) ) && j > 0) {
+    if((j != (WORDONTHENETWORK - 1) ) && j > 0) {
+
+
 
         MPI_Send(x, 1, restype, 0, 50, MPI_COMM_WORLD);
 
@@ -207,8 +214,6 @@ void worker_sender()
     x->word[0][0] = '\0';
 
     MPI_Ssend(x, 1, restype, 0, 50, MPI_COMM_WORLD);
-
-
 
 
   free(x);
