@@ -20,9 +20,6 @@ struct hash_element // entry table
 
 struct hash_element* hash_tab[HASHSIZE]; // pointer table
 
-
-struct hash_element* get_hash_head();
-
 /* report_hash_elements():
  * display the hash elements and
  * the computation timing */

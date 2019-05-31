@@ -15,7 +15,6 @@
 // minimum for considering a sequence of character as a word, starting from value 0.
 #define MINWORDLENGTH 0
 
-
 /*
  * calculate_word_frequencies(long start, long chunk_size):
  * calculate the word frequencies for each file.
@@ -40,6 +39,5 @@ long calculate_total_number_of_bytes();
  * and each word - occurrences values.
  */
 void report(float execution_time, short my_rank);
-
 
 #endif /* WORKERHELPER_H_ */

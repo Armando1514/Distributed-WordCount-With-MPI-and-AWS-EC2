@@ -13,15 +13,11 @@
 
 #define PATHMODE "/" //unix like OS
 
-
-
 struct node {
     char* data;
     long size;
     struct node* next;
 };
-
-
 
 /* get_total_file_sizes:
  * get the total file sizes in bytes */

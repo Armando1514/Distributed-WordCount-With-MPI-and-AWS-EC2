@@ -39,7 +39,6 @@ void report_hash_elements(float execution_time, short my_rank) {
     long total_word = 0;
 
     FILE *fptr;
-    char there_was_error = 0;
 
     char filename[500];
 
@@ -147,9 +146,6 @@ void __put_in_hashmap(char* s, int value)
     hash_tab[__hash(s)] = link;
 }
 
-struct hash_element* get_hash_head(){
-    return hash_tab;
-}
 
 /* insert_or_increment(char *s):
  * if there is yet the node, increments the value,

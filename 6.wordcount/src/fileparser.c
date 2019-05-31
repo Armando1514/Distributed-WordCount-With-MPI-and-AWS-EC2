@@ -56,7 +56,7 @@ long get_total_file_sizes()
 {
     long total_size = 0;
     long single_size = 0;
-    struct node* ptr = (struct node*) list_of_file_path();
+    struct node* ptr = (struct node*)list_of_file_path();
     char* path_string;
 
     while (ptr != NULL) {
@@ -124,17 +124,16 @@ void free_the_list_of_files()
     struct node* next;
 
     while (current != NULL) {
+
         next = current->next;
-        free(current->data);
+
         free(current);
+
         current = next;
     }
 }
-
 
 struct node* get_header_list()
 {
     return head;
 }
-
-

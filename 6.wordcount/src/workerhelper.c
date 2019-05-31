@@ -16,7 +16,6 @@
 
 #include "../include/fileparser.h"
 
-
 #include "../include/workerhelper.h"
 
 /*
@@ -32,13 +31,11 @@ struct node* __which_is_my_portion(long * start, long chunk_size)
     struct node* head_list = get_header_list();
     struct node* next;
     long tmp_start = (long)*start;
-    char* path_string;
 
     long temp_size = current->size;
     // the file to analyze is the first
     if (temp_size > *start) {
         next = current->next;
-        path_string = current->data;
 
         current = next;
     }
@@ -50,7 +47,6 @@ struct node* __which_is_my_portion(long * start, long chunk_size)
             next = current->next;
 
 
-            path_string = current->data;
 
             temp_size = temp_size + current->size;
 
@@ -84,10 +80,8 @@ struct node* __which_is_my_portion(long * start, long chunk_size)
     //remove the other elements in the list after the current node
     if (current != NULL) {
 
-        next = current->next;
 
         current->data = NULL;
-        current = next;
     }
 
     return head_list;
@@ -110,9 +104,9 @@ long __build_frequencies_hash(FILE* fp, long word_to_count, long word_counted)
     if (ftell(fp) != 0) {
         while (isalnum(ch = fgetc(fp))) {
 
-                word_counted++;
-            }
+            word_counted++;
         }
+    }
 
 
 
@@ -181,6 +175,8 @@ long __build_frequencies_hash(FILE* fp, long word_to_count, long word_counted)
  */
 void calculate_word_frequencies(long start, long chunk_size)
 {
+
+
     FILE* fp; /* reference to the file */
 
     struct node* my_portion = __which_is_my_portion(&start, chunk_size); /* my portion file to read */
@@ -192,10 +188,15 @@ void calculate_word_frequencies(long start, long chunk_size)
 
     while (my_portion != NULL && my_portion->data != NULL && word_counted < chunk_size) {
 
+        //print the loading in console (only view function)
+        printf(".Loading.....\n");
+
+
+
         fp = fopen(my_portion->data, "r");
 
         if(fp==NULL)
-          perror("Error in file opening at line 200 in the file workerhelper.c");
+            perror("Error in file opening at line 200 in the file workerhelper.c");
 
         if (i == 0) {
             fseek(fp, start -1, SEEK_SET);
