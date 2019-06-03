@@ -1,8 +1,14 @@
 /*
- * hashmap.c
- * Implementation of a simple hashmap with function for insert and search.
- * Author: Armando Ferrara
- */
+* Name        : hashmap.c
+* hashmap: it implements a hash map structure with the related functionality :
+*- insert_or_increments(), inserts the read word if is not present, or increments if present.
+*- report_hash_elements(), report all the words into the hash map in a file into the folder "results", with the name of the process that analyzed its.
+*- free_hashmap(): de-allocate all the memory related to the hash map structure.
+* Author      : Armando Ferrara
+*
+*
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>

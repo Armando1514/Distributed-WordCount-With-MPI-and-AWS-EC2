@@ -1,9 +1,10 @@
 /*
  * fileparser.c
- * Function useful for get the total file size, and the list of
- * the file names.
+ * it offers the functions related the operations on file
+ * - list_of_file_path(),  reads all the files into the folder "sample" and return a linked list with filenames.
+ * - get_total_file_size(), returns the sum of all the files sizes (bytes).
  * Author: Armando Ferrara
- */
+*/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -114,24 +115,7 @@ struct node* list_of_file_path()
     return head;
 }
 
-/* free_the_list_of_files
- * deallocate all the list structure
- */
-void free_the_list_of_files()
-{
-    /* deref head_ref to get the real head */
-    struct node* current = head;
-    struct node* next;
 
-    while (current != NULL) {
-
-        next = current->next;
-
-        free(current);
-
-        current = next;
-    }
-}
 
 struct node* get_header_list()
 {

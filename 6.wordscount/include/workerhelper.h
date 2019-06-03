@@ -1,9 +1,10 @@
 /*
  * workerhelper.h
- * The worker helper, manage all the file i the package, assign the
- * right number of file to read, the right position for start the reading
- * and manage all the issue related in a parallel context related to the reading
- * from files.
+ *
+ It manages all the files into the package, assign the
+ right number of file to read and the right position for start the reading.
+ It also resolves all the  issue related to the reading from files  in a parallel context.
+ It allows the communications between the main and the lower level (file parser and hashmap)
  *  Author: Armando Ferrara
  */
 

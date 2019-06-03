@@ -1,9 +1,10 @@
 /*
  * fileparser.h
- * Functions useful for get the total file size, and the list of
- * the file names.
+ * it offers the functions related the operations on file
+ * - list_of_file_path(),  reads all the files into the folder "sample" and return a linked list with filenames.
+ * - get_total_file_size(), returns the sum of all the files sizes (bytes).
  * Author: Armando Ferrara
- */
+*/
 
 #ifndef FILEPARSER_H_
 #define FILEPARSER_H_

@@ -33,4 +33,4 @@ target_include_directories(mpihelper PUBLIC ${PROJECT_SOURCE_DIR}/include)
 add_executable(${PROJECT_NAME} src/main.c)
 
 # Link libraries
-target_link_libraries(${PROJECT_NAME} PRIVATE  workerhelper fileparser  hashmap mpihelper -lssl -lcrypto)
+target_link_libraries(${PROJECT_NAME} PRIVATE  workerhelper fileparser  hashmap mpihelper )

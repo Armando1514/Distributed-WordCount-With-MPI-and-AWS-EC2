@@ -180,6 +180,7 @@ void calculate_word_frequencies(long start, long chunk_size)
     FILE* fp; /* reference to the file */
 
     struct node* my_portion = __which_is_my_portion(&start, chunk_size); /* my portion file to read */
+    struct node* delete_tmp;
     int i = 0;
     if(start < 0)
         start = 0;
@@ -194,6 +195,8 @@ void calculate_word_frequencies(long start, long chunk_size)
 
 
         fp = fopen(my_portion->data, "r");
+
+        delete_tmp = my_portion;
 
         if(fp==NULL)
             perror("Error in file opening at line 200 in the file workerhelper.c");
@@ -211,6 +214,9 @@ void calculate_word_frequencies(long start, long chunk_size)
         fclose(fp);
 
         my_portion = my_portion->next;
+
+        //deallocate the element into the list
+        free(delete_tmp);
     }
 
 
@@ -234,7 +240,6 @@ long calculate_total_number_of_bytes()
 
 void deallocate_the_lists()
 {
-    free_the_list_of_files();
 
     free_hashmap();
 }

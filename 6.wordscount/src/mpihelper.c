@@ -1,6 +1,9 @@
 /*
- * mpihelper.c
- * Author: Armando Ferrara
+ * mpihelper.h : if the processor is the master,
+ * it waits the words and the occurrences from the slaves (master_receiver()).
+ * If the processors are the slaves, it puts all the words and the occurrences
+ * in a structure where the size is choose by the developer
+ * (through #define WORDONTHENETWORK) and sends it to the master (worker_sender()).
  */
 
 #include <stdio.h>

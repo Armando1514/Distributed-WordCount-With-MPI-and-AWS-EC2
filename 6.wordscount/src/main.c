@@ -1,6 +1,9 @@
 
 /*
- * main.c
+ * main: the master sends the  portion of bytes to read, after computes its workload communicating with "workerhelper" ,
+ * finally it waiting the results from the slaves(communicating with "mpihelper") for combine them.
+ * The slaves after that has been received the portion to analyze,
+ * they compute and send  to the master, the words/occurrences (communicatin with "mpihelper") through a defined struct (using "mpihelping").
  * Author: Armando Ferrara
  */
 
