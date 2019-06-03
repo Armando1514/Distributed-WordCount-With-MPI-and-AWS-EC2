@@ -166,6 +166,8 @@ Go in the project folder "wordcounts" and write in terminal :
 
 `mkdir builds`
 
+> NOTE: If is not present, you have to create also a folder called "results"
+
 navigate into the folder created:
 
 `cd builds`
