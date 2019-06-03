@@ -140,7 +140,7 @@ workload is increased in direct proportion to the number of processors. Looking 
 
 
 
-### Strong scalability
+## Strong scalability
 
 In this case the problem size stays fixed but the number of processing elements are increased. The goal in this case is to find that the program does not waste too many cycles due to parallel overhead.
 
