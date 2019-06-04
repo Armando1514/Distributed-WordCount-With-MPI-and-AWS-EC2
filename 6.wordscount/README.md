@@ -140,7 +140,7 @@ workload is increased in direct proportion to the number of processors. Looking 
 
 
 
-### Strong scalability
+## Strong scalability
 
 In this case the problem size stays fixed but the number of processing elements are increased. The goal in this case is to find that the program does not waste too many cycles due to parallel overhead.
 
@@ -165,6 +165,8 @@ In this way the size of the problem is fixed, and gradually other processors hav
 Go in the project folder "wordcounts" and write in terminal :
 
 `mkdir builds`
+
+> NOTE: If is not present, you have to create also a folder called "results"
 
 navigate into the folder created:
 
