@@ -54,17 +54,15 @@ END REPORT.
 
 1.  The main goal is to have a perfect division of the workload for each worker. To reach that each worker computes a balanced number of bytes,  namely, the master elaborates the sum of all the file  byte sizes (S), considering N processes, each worker analyze :
 
-   ```mathematica
-   chunk_size = S / N
-   ```
+                                          ```mathematica
+                                          chunk_size = S / N
+                                             ```
 
-   some workers have to compute also the **remainder of the  division** (**chunk_size + 1**), but the 
-
-   cost is marginal. 
+some workers have to compute also the **remainder of the  division** (**chunk_size + 1**), but the cost is marginal. 
 
 2. The master has also to send to each worker the position where **each process must start to read the file**, because they must not read the words (bytes) get analyzed by the previous worker. Suppose that you want to know where the processor "i" has to start to read into the file and "j" are all the previous worker:
 
-   ![start formula](http://ferrara.link/img/wordscount2019/workCalculation.png)
+                           ![start formula](http://ferrara.link/img/wordscount2019/workCalculation.png)
 
 3. Each worker read all the file into the **"directory sample"** than starting from the first, it deletes all the files where the sum of the bytes until the current reading is **less than "start"**. After that the previous condition is no longer satisfied, it inserts in a linked list the files until the sum of these is **less than "chunk_size"** , the files that appear after the chunk_size condition are removed. Those are the files that the worker must analyze.
 
