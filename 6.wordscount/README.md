@@ -114,8 +114,7 @@ Each instance has 4 vCPUs, so the tests were performed by increasing the number 
 ## Weak scalability
 
 Linear scaling is achieved if the run time stays constant while the 
-workload is increased in direct proportion to the number of processors. In the case of weak scaling, linear scaling is achieved if the run time stays constant while the workload is increased in direct proportion
-to the number of processors ( e.g.1 processor 1158762 bytes,  2 processors, 1158762 x 2 bytes) . 
+workload is increased in direct proportion to the number of processors (e.g.1 processor 1158762 bytes,  2 processors, 1158762 x 2 bytes) . 
 
 ![plot of weak scalability](http://ferrara.link/img/wordscount2019/weak-scalability-plot.jpg)
 
@@ -149,7 +148,7 @@ below our bar plot representing the measure.
 ![bar plot strong scaling efficiency](http://ferrara.link/img/wordscount2019/strong-efficiency.jpg)
 
 The bar plot shows that bigger is the input size, higher is the efficiency of using more machines. We are able also to observe that in some case, the efficiency is more than 100%, due the splitting of a big workload to different processors, the results get better as the input size is increased.
-This is valid for higher inputs sizes, because the benefits gain from the addition of more workers is more relevant than the communication overhead, resulting then in a higher scaling efficiency. However we are able also to see, that for small sizes, the efficiency is not as expected, the cost due to overhead in communication is higher than the cost of workload splitting.
+This is valid for higher inputs sizes, because the benefits gain from the addition of more workers is more relevant than the communication overhead, resulting then in a higher scaling efficiency. However we are able also to see, that for small sizes, the efficiency is not as expected,in some cases, the cost due to overhead in communication is higher than the cost of workload splitting.
 In summary, there is a max efficiency of 120 % and the minimum is around 60%, a notable result.
 
  
