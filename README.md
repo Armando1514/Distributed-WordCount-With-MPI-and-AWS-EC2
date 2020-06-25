@@ -3,7 +3,7 @@ This tutorial refers to a system with a Linux OS (in this case Ubuntu).
 
 The goal is show how start from basic and arrive to build a real solution for the problem of word counting. The problems are numbered from 1 to 6, all the statement are defined inside. 
 
-Starting from the first, until the 5, you will learn all the basics concepts that will help you to build the solution for the problem 6 about word counting in a parallel context.
+Starting from the first, until the 5, you will learn all the basics concepts that will help you to build the solution for the problem 6 about word counting in a distributed context.
 
 # Prerequisites
 **0. AWS Account** (in my case is a student account)
