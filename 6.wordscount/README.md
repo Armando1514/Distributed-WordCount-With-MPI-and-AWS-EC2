@@ -184,3 +184,4 @@ and after :
 now you are able to run the program in the cluster or in local [(learn how create a cluster)](https://github.com/Armando1514/MPI-for-AWS-EC2) :
 
 `mpirun -np NUMBER_OF_PROCESSORS [--hostfile machinefile]  ./wordscount`
+
