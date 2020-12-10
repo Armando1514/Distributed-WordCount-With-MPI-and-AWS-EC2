@@ -60,7 +60,7 @@ some workers have to compute also the **remainder of the  division** (**chunk_si
 
 2. The master has also to send to each worker the position where **each process must start to read the file**, because they must not read the words (bytes) get analyzed by the previous worker. Suppose that you want to know where the processor "i" has to start to read into the file and "j" are all the previous worker:
 
-   ![start formula](http://ferrara.link/img/wordscount2019/workCalculation.jpg)
+   ![start formula](./doc/img/math-formula.jpg)
 
 3. Each worker read all the file into the **"directory sample"** than starting from the first, it deletes all the files where the sum of the bytes until the current reading is **less than "start"**. After that the previous condition is no longer satisfied, it inserts in a linked list the files until the sum of these is **less than "chunk_size"** , the files that appear after the chunk_size condition are removed. Those are the files that the worker must analyze.
 
@@ -74,7 +74,7 @@ some workers have to compute also the **remainder of the  division** (**chunk_si
 
 Below the UML diagram :
 
-![words count uml diagram](http://ferrara.link/img/wordscount2019/words-count-uml-diagram.jpg)
+![words count uml diagram](./doc/img/uml-diagram.jpg)
 
 Let's describe its in details:
 
@@ -116,7 +116,7 @@ Each instance has 4 vCPUs, so the tests were performed by increasing the number 
 Linear scaling is achieved if the run time stays constant while the 
 workload is increased in direct proportion to the number of processors (e.g.1 processor 1158762 bytes,  2 processors, 1158762 x 2 bytes) . 
 
-![plot of weak scalability](http://ferrara.link/img/wordscount2019/weak-scalability-plot.jpg)
+![plot of weak scalability](./doc/img/weak-scalability.jpg)
 
 
 
@@ -124,7 +124,7 @@ The chart shows us a stable trend when the sizes of the inputs are high, it is n
 **Weak scaling efficiency** that is the  amount of time to complete a work unit with 1 processing element (t1), and the amount of time to complete N of the same work units with N processing elements (tN), the weak scaling efficiency (as a percentage of linear) is given as: ( t1 / tN ) * 100%.
 Below the cart representing this efficiency.
 
-![weak efficiency bar plot](http://ferrara.link/img/wordscount2019/weak-efficiency.jpg)
+![weak efficiency bar plot](./doc/img/weak-scalability-2.jpg)
 
 The bar plot shows that the trend is quite stable with a high input size, but for a small input size, the efficiency is not appreciable (it is not convenient to use more processors that communicate for a small input size, because I need to consider also various costs, like send on the network, MPI manager, coordinator etc.).
 In summary, the execution times seem not to change too much, there is a maximum efficiency of 98% and the minimum is around 45%, does it means that the algorithm should address larger problems in a reasonable amount of time by using more resources.
@@ -133,7 +133,7 @@ In summary, the execution times seem not to change too much, there is a maximum 
 
 In that case the problem size stays fixed but the number of processing elements are increased. The goal is to show that the program does not waste too many cycles due to parallel overhead. 
 
-![strong scalability  plot](http://ferrara.link/img/wordscount2019/strong-scalability-plot.jpg)
+![strong scalability  plot](./doc/img/strong-scalability.jpg)
 
 
 
@@ -145,7 +145,7 @@ Strong scaling efficiency is the  amount of time to complete a work unit with 1 
 
 below our bar plot representing the measure.
 
-![bar plot strong scaling efficiency](http://ferrara.link/img/wordscount2019/strong-efficiency.jpg)
+![bar plot strong scaling efficiency](./doc/img/strong-scalability-2.jpg)
 
 The bar plot shows that bigger is the input size, higher is the efficiency of using more machines. We are able also to observe that in some case, the efficiency is more than 100%, due the splitting of a big workload to different processors, the results get better as the input size is increased.
 This is valid for higher inputs sizes, because the benefits gain from the addition of more workers is more relevant than the communication overhead, resulting then in a higher scaling efficiency. However we are able also to see, that for small sizes, the efficiency is not as expected,in some cases, the cost due to overhead in communication is higher than the cost of workload splitting.
