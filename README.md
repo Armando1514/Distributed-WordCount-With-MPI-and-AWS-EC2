@@ -1,126 +1,187 @@
-# Tutorial
-This tutorial refers to a system with a Linux OS (in this case Ubuntu).
+# MPI Parallel Words Count
 
-The goal is show how start from basic and arrive to build a real solution for the problem of word counting. The problems are numbered from 1 to 6, all the statement are defined inside. 
+## Problem statement
 
-Starting from the first, until the 5, you will learn all the basics concepts that will help you to build the solution for the problem 6 about word counting in a distributed context.
+We will be doing a version of map-reduce using MPI to perform word counting over a large number of files. There are 3 steps to this process:
 
-# Prerequisites
-**0. AWS Account** (in my case is a student account)
-# Requirements for start to work with AWS:
-**1.  Amazon CLI**
-the installation is easy, just open the terminal and write:
+1. Is to read in the master file list which will contain the names of 
+   all the files that are to be counted. Note that only 1 of your processes should read this file. ( **Problem improvement**  : The master sends two integers, start and chunk size, the slave calculates the files to read based on these two integers. The improvements are on the network communication because the master doesn't send a string list, but only two integers. ) Then each of the processes should receive their portion of the file from the master process. Once a process has received its list of files to process, it should then read in each of the files and perform a word counting, keeping track of the frequency each word found in the files occurs. We will call the histogram produced the local histogram. This is similar to the map stage or map-reduce.
+2. Is to then combine frequencies of words across processes. For example
+   the word ‘cat’ might be counted in multiple processes and we need to add up all these occurrences. This is similar to the reduce stage of map-reduce. 
+3. Is to have each of the processes send their local histograms to the 
+   master process. The master process just needs to gather up all this information. Note that there will be duplicate words between processes. 
+   The master should then print out the results to the screen.
 
-  ```bash
-curl ”https://bootstrap.pypa.io/get-pip.py” -o ”get-pip.py”
-sudo python get-pip.py
-sudo pip install awscli
-  ```
-After that, you need to configure your CLI, go in your account, click on "Account Detalis" and after
-click on "Show", near AWS CLI and copy all the code starting from [default] and paste in "~/.aws/credentials".
-Well Done! The first step is over.
-**2.  Create a Security Group**
-Why? Security group are virtual firewall for instance EC2 that control inbound and outbound traffic(who is able to use your ec2 instance), in our example we don't care about security, for that reason i give the max permission. Write this code in the terminal:
+## Input files
 
-  ``` bash
-aws ec2 create-security-group --group-name noSecurity --description "security group for example all the traffic is allowed"
-aws ec2 authorize-security-group-ingress --group-name noSecurity --protocol -1 --port 0-65535 --cidr 0.0.0.0/0
-  ```
-Remember to save the id of the security group that return the execution of the first line, because we need it for the step 4. (If you forget, is possibile to see the id in the Amazon console web based, go in the section EC2 and select in the menù the field "Security groups")
-Another step is over!
-**3.  Create and download SSH credential**\
-Why? It's a secure way to remotely access a EC2 instance, write:
+This project has been realized to read and analyze a words count on Plain Text Files (byte reading)
 
-  ```bash
-aws ec2 create-key-pair --key-name access-key --query 'KeyMaterial' --output text > access-key.pem
-     chmod 400 access-key.pem
-  ```
-Done!
-**4.  Run an EC2 instance of Ubuntu Server 16.04 LTS**
-**Replace --security-group-id exampleID with your security group id (step 2).**
+Example:
 
-```bash
-aws ec2 run-instances --image-id ami-f4cc1de2 --security-group-ids exampleID --count 1 --instance-type t2.micro --key-name access-key --query 'Instances[0].InstanceId'
-```
-Now the output is the id of the instances, replace "IstanceID" with the output
+> ```
+> Is not the Republic the vehicle of three or four great truths which,
+> to Plato's own mind, are most naturally represented in the form of the
+> State? Just as in the Jewish prophets the reign of Messiah, or 'the day
+> of the Lord,' or the suffering Servant or people of God, or the 'Sun of
+> righteousness with healing in his wings' only convey, to us at least,
+> their great spiritual ideals, so through the Greek State Plato reveals
+> to us his own thoughts about divine perfection, which is the idea of
+> good--like the sun in the visible world; about human perfection, which
+> is justice--about education beginning in youth and continuing in later
+> years
+> ```
 
- ```bash
-aws ec2 describe-instances --instance-ids InstanceID --query 'Reservations[0].Instances[0].PublicIpAddress'
- ```
-Remember the output is the public ip of the EC2 instance. 
 
-**5. Connect to the instance by SSH**  
-Replace ipOutput with the previous output and write:
 
- ```bash
- ssh -i access-key.pem ubuntu@ipOutput
- ```
-Now you connected your terminal to the EC2 instance with Ubuntu OS. (You are able to use Amazon web console for make the same steps through browser, and also see the instance description, like ip, security groups etc.)
-# Environment Ubuntu with OpenMPI and OpenMP
-What this script installs? 
-- user:MPIforAWSEC2
-- vim
-- htop
-- OpenMPI 4.0
-- OpenMP included in the GNU GCC
-## Cluster scenario
-- 1 Master node, here you need to generate the ssh-key and update the script.
-- N Slaves, here you need to run the script using the keys generated on the master node.
-## How to generate your SSH keys
-Execute the command on the master node :
-``` bash
-ssh-keygen
-```
-Your key are stored in the folder .ssh, in the file id\_rsa and id\_rsa.pub .
-## Install
+## Output
 
-**1. Configure install.sh** 
+The output into the folder "results", report all the word analyzed by processors involved in the computation and the time consumed by each of them. Only for the processor with rank 0 (the master), there are into the file all the words/ occurrences combined and the whole time computation.
 
-Replace into the file install.sh the section where is write "Change here using tour ..." .
-Pay attention to copy correctly the content of id\_rsa and id\_rsa.pub (also the space is important).
-
-**2. Run the script** 
-
-Run the script "install.sh"  on all the ec2 instance.\ If you changed the file on your local pc  first you need to send from your local computer to the ec2 instances through scp:
-``` bash
-scp -i access-key.pem  install.sh ubuntu@instancePublicIP:~
-```
-After, login through terminal in the instance where you sent the file :
- ```bash
-ssh -i access-key.pem ubuntu@instancePublicIP
-     
- ```
-Execute the command:
-
-``` bash 
-source install.sh
-```
-**3. Create the host file in the master node** 
-
-In the master node login as pcpc
-``` bash
-sudo login pcpc
+An example file with rank 0 :
 
 ```
-Create a file named machinefile in the master node, and write inside all the private id of each instance, for example:
-``` text
-localhost slots=1
-privateIpIstance1 slots=1
-privateIpInstance2 slots=1
-```
-(slots does it mean the core that each EC2 istance have inside, in our case 1.)\
-**4. Test the environment** 
-Compile the program  on your master node with: 
+START REPORT FOR PROCESS WITH RANK 0: 
+Word:  MUNNUT --- Value:  1  
+Word:  MEDIATRIX --- Value:  1  
+Word:  SLATTERNLY --- Value:  2 
+END REPORT.
+ TOTAL EXECUTION TIME: 1.220264 seconds 
+ TOTAL WORDS ANALYZED: 4  
 
 ```
-mpicc -fopenmp 1.helloToAnother.c -o helloToAnother
+
+## Algorithm description
+
+1. The main goal is to have a perfect division of the workload for each worker. To reach that each worker computes a balanced number of bytes,  namely, the master elaborates the sum of all the file  byte sizes (S), considering N processes, each worker analyze :
+
+   ​                                                                        **chunk_size = S / N**
+
+some workers have to compute also the **remainder of the  division** (**chunk_size + 1**), but the cost is marginal. 
+
+2. The master has also to send to each worker the position where **each process must start to read the file**, because they must not read the words (bytes) get analyzed by the previous worker. Suppose that you want to know where the processor "i" has to start to read into the file and "j" are all the previous worker:
+
+   ![start formula](http://ferrara.link/img/wordscount2019/workCalculation.jpg)
+
+3. Each worker read all the file into the **"directory sample"** than starting from the first, it deletes all the files where the sum of the bytes until the current reading is **less than "start"**. After that the previous condition is no longer satisfied, it inserts in a linked list the files until the sum of these is **less than "chunk_size"** , the files that appear after the chunk_size condition are removed. Those are the files that the worker must analyze.
+
+4. Each worker analyzes the own files and inserts in a hashmap the alphanumeric words that occur. There is a problem to manage if a worker is currently reading a word, but the byte **i = chunk_size** comes before analyzing this, it finishes to analyze it, and the next worker ignores this word and starts to read from the next word.
+
+5. Each slave sends to the master that combines the analyzed words.
+
+
+
+## Implementation details
+
+Below the UML diagram :
+
+![words count uml diagram](http://ferrara.link/img/wordscount2019/words-count-uml-diagram.jpg)
+
+Let's describe its in details:
+
+- fileparser: it offers the functions related to the operations on a file : 
+  - list_of_file_path(),  reads all the files into the folder "sample" and return a linked list with filenames.
+  - get_total_file_size(), returns the sum of all the files sizes (bytes).
+- hashmap: it implements a hash map structure with the related functionality :
+  - insert_or_increments(), inserts the read word if is not present, or increments if present.
+  - report_hash_elements(), reports all the words into the hash map in a file into the folder "results", with the name of the process that analyzed them.
+  - free_hashmap(): de-allocate all the memory related to the hash map structure.
+- workerhelper: it manages all the files into the package, assigns the right number of the file to read and the right position for start the reading. It also resolves all the issues related to the reading from files in a parallel context. It allows communications between the main and the lower level (file parser and hashmap).
+  - calculate word frequencies(): calculates the words that are in a file and the occurrences.
+- mpihelper: if the processor is the master, it waits for the words and the occurrences from the slaves ("master_receiver()").
+  If the processors are the slaves, it puts all the words and the occurrences in a structure where the size is chosen by the developer (through "#define WORDONTHENETWORK") and sends it to the master ("worker_sender()").
+
+> Is not obvious that MPI_Send will send the specified size of the structure because the using of MPI_Send  allows the MPI implementation the maximum flexibility in choosing how to deliver your data. Is just because if you have a small number of bytes, is better don't stress the network sending a big structure
+
+- main: the master sends the portion of bytes to read after computes its workload communicating with "workerhelper", finally it waiting for the results from the slaves(communicating with "mpihelper") for combine them. The slaves after that have been received the portion to analyze, they compute(trough "workerhelper") and send to the master, the words/occurrences through a defined struct (using "mpihelping").
+
+### MPI Features
+
+In this project has been used the following MPI features:
+
+- MPI_Scatter ;
+- MPI Derived Data Types (for the struct to send to the master);
+- MPI_Send ;
+- MPI_Ssend;
+
+
+
+# Measuring Parallel Scaling Performance
+
+The tests were performed on Amazon AWS EC2 cluster, with 5 instances (t2.xlarge).
+
+Each instance has 4 vCPUs, so the tests were performed by increasing the number of processors by one at a time, and by adding other instances gradually (starting from 1 instance with 1 processor, until 5 instances with 20 processors).
+
+## Weak scalability
+
+Linear scaling is achieved if the run time stays constant while the 
+workload is increased in direct proportion to the number of processors (e.g.1 processor 1158762 bytes,  2 processors, 1158762 x 2 bytes) . 
+
+![plot of weak scalability](http://ferrara.link/img/wordscount2019/weak-scalability-plot.jpg)
+
+
+
+The chart shows us a stable trend when the sizes of the inputs are high, it is not theoretically perfect (the trend should be constant), because I have to consider also the network, send on it is more expensive than communicate through processors on the same machine, and there is also other overhead to communicate through MPI and for coordinate the work. But for better understand how much is the efficiency of my algorithm, I introduce a new measure:
+**Weak scaling efficiency** that is the  amount of time to complete a work unit with 1 processing element (t1), and the amount of time to complete N of the same work units with N processing elements (tN), the weak scaling efficiency (as a percentage of linear) is given as: ( t1 / tN ) * 100%.
+Below the cart representing this efficiency.
+
+![weak efficiency bar plot](http://ferrara.link/img/wordscount2019/weak-efficiency.jpg)
+
+The bar plot shows that the trend is quite stable with a high input size, but for a small input size, the efficiency is not appreciable (it is not convenient to use more processors that communicate for a small input size, because I need to consider also various costs, like send on the network, MPI manager, coordinator etc.).
+In summary, the execution times seem not to change too much, there is a maximum efficiency of 98% and the minimum is around 45%, does it means that the algorithm should address larger problems in a reasonable amount of time by using more resources.
+
+## Strong scalability
+
+In that case the problem size stays fixed but the number of processing elements are increased. The goal is to show that the program does not waste too many cycles due to parallel overhead. 
+
+![strong scalability  plot](http://ferrara.link/img/wordscount2019/strong-scalability-plot.jpg)
+
+
+
+As shown in the graph, using 20 processors and the input sizes listed above, the communication overhead doesn't impact the performance. Is important to underline that the performances do not really improve when are used more than 15 processors, due to communication overhead. This meaning that for tests where the input is similar to our sizes, is useless to use more than 15 processors, but this is only a case related to our inputs sizes in an empirical way, with a bigger size input, adopt more than 15 processors will help to raise  the performances, but also in this case will there a point where the performances do not improve too much  compared to the processors that my system is using.
+
+For better understanding the trade-off between processors used and performances obtained we introduce the "strong scaling efficiency" concept:
+Strong scaling efficiency is the  amount of time to complete a work unit with 1 processing element ( t1 ), and the amount of time to complete the same unit of work with N processing elements ( tN ), the **strong scaling efficiency (as a percentage of linear)** is given as:
+                                                                         **t1 / ( N * tN ) * 100%**
+
+below our bar plot representing the measure.
+
+![bar plot strong scaling efficiency](http://ferrara.link/img/wordscount2019/strong-efficiency.jpg)
+
+The bar plot shows that bigger is the input size, higher is the efficiency of using more machines. We are able also to observe that in some case, the efficiency is more than 100%, due the splitting of a big workload to different processors, the results get better as the input size is increased.
+This is valid for higher inputs sizes, because the benefits gain from the addition of more workers is more relevant than the communication overhead, resulting then in a higher scaling efficiency. However we are able also to see, that for small sizes, the efficiency is not as expected,in some cases, the cost due to overhead in communication is higher than the cost of workload splitting.
+In summary, there is a max efficiency of 120 % and the minimum is around 60%, a notable result.
+
+ 
+
+## Instructions for run
+
+> NOTE: refers to a system with a Linux OS (in this case Ubuntu).
+
+Go in the project folder "wordcounts" and write in terminal :
+
+`mkdir builds`
+
+> NOTE: If is not present, you have to create also a folder called "results"
+
+navigate into the folder created:
+
+`cd builds`
+
+install "cmake" :
+
 ```
-send the file compiled helloToAnother to each slave, with the command:
-``` bash
-scp helloToAnother pcpc@privateIp:~
+apt-get -y install cmake
 ```
-now we can run our example
-``` bash
-mpirun -np 2 --hostfile machinefile ./helloToAnother
-```
-look that -np 2 use only 2 EC2 instances.
+
+type :
+
+`cmake  ..`
+
+and after :
+
+ `make`
+
+now you are able to run the program in the cluster or in local [(learn how create a cluster)](https://github.com/Armando1514/MPI-for-AWS-EC2) :
+
+`mpirun -np NUMBER_OF_PROCESSORS [--hostfile machinefile]  ./wordscount`
+
